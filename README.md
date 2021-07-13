@@ -24,7 +24,7 @@ conda install pybigwig -c bioconda
 ```
 * [lightgbm](https://lightgbm.readthedocs.io/en/latest/index.html)(2.3.0) A gradient boosting tree-based algorithm with fast training speed and high efficienty.
 ```
-conda install -c conda-forge lightgbm
+pip install lightgbm
 ```
 * [tensorflow](https://www.tensorflow.org/) (1.14.0) A popular deep learning package.
 ```
@@ -40,6 +40,9 @@ conda install keras
 * [Ocelot imputation for the ENCODE3 histone mark dataset](https://guanfiles.dcmb.med.umich.edu/Ocelot/imputation_encode3/)
 * [Ocelot imputation for the Roadmap histone mark dataset](https://guanfiles.dcmb.med.umich.edu/Ocelot/imputation_roadmap/)
 
+## Code for ENCODE Imputation Challenge with examples
+* [challenge solution](https://github.com/GuanLab/ENCODE_imputation)
+
 ## Data processing and model building scripts for ENCODE3 imputation
 * data_encode3
 * code_encode3
@@ -48,11 +51,8 @@ conda install keras
 * data_roadmap 
 * code_roadmap
 
-## Example code for SHAP analysis
-* code_shape
-
-## Original code for ENCODE Imputation Challenge
-* [winning algorithmn](https://github.com/GuanLab/ENCODE_imputation)
+## Code for SHAP analysis
+* code_shap
 
 
 
