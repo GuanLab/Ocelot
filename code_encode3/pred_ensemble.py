@@ -23,13 +23,18 @@ tier3=['H3F3A','H3K9me2']
 
 id_all=np.loadtxt('../data_encode3/id_all.txt','str')
 
-path0='./pred_ensemble/'
+path0='./pred_ensemble_25bp/'
 os.system('mkdir -p ' + path0)
+path1='./pred_ensemble/'
+os.system('mkdir -p ' + path1)
+
+pathl='./'
+pathu='./'
 
 # YYY is the row feature and XXX is the target
 dict_map={}
-dict_map['H3K4me1']=['H3K4me3','H3K36me3','H3K27me3']
-dict_map['H3K4me3']=['H3K4me1','H3K36me3','H3K27me3']
+dict_map['H3K4me1']=['H3K4me3','H3K36me3','H3K27ac']
+dict_map['H3K4me3']=['H3K4me1','H3K36me3','H3K27ac']
 dict_map['H3K36me3']=['H3K4me3','H3K27me3','H3K27ac']
 dict_map['H3K27me3']=['H3K4me3','H3K36me3','H3K27ac']
 dict_map['H3K9me3']=['H3K4me3','H3K36me3','H3K27me3','H3K27ac']
@@ -48,28 +53,36 @@ dict_map['H3K9me2']=['H3K4me3','H3K36me3','H3K27me3','H3K27ac']
 the_template='template_unet_YYY_XXX_all'
 
 for target_assay in tier0+tier1+tier2+tier3:
+    bw_avg = pyBigWig.open('../data_encode3/bigwig_all/avg_' + target_assay + '.bigwig')
+    dict_avg = {}
+    for the_chr in chr_all:
+        dict_avg[the_chr] = np.array(bw_avg.values(the_chr, 0, chr_len_bin[the_chr]))
+    bw_avg.close()
     for i in np.arange(1,80):
         the_cell='C%03d' % i
         the_id = the_cell + '_' + target_assay
         if the_id not in id_all:
-            bw_output = pyBigWig.open(path0 + the_id + '.bigwig','w')
-            bw_output.addHeader(list(zip(chr_all , np.ceil(np.array(num_bp)/25).astype('int').tolist())), maxZooms=0)
-            bw_avg = pyBigWig.open('../data_encode3/bigwig_all/avg_' + target_assay + '.bigwig')
+            bw_output0 = pyBigWig.open(path0 + the_id + '.bigwig','w')
+            bw_output0.addHeader(list(zip(chr_all , np.ceil(np.array(num_bp)/25).astype('int').tolist())), maxZooms=0)
+            bw_output1 = pyBigWig.open(path1 + the_id + '.bigwig','w')
+            bw_output1.addHeader(list(zip(chr_all , num_bp)), maxZooms=0)
             for feature_assay in dict_map[target_assay]:
-                the_file = './unet_' + feature_assay + '_' + target_assay + '_all/epoch03/pred_' + the_id + '_seed0.bigwig'
+                the_file = pathl + 'lgbm_' + feature_assay + '_' + target_assay + '_all/pred/pred_' + the_id + '_0.bigwig'
                 if not os.path.isfile(the_file):
                     continue
                 else:
-                    bw_lgbm = pyBigWig.open('./lgbm_' + feature_assay + '_' + target_assay + '_all/pred/pred_' + the_id + '_0.bigwig')
-                    bw_unet = pyBigWig.open('./unet_' + feature_assay + '_' + target_assay + '_all/epoch03/pred_' + the_id + '_seed0.bigwig')
+                    bw_lgbm = pyBigWig.open(pathl + 'lgbm_' + feature_assay + '_' + target_assay + '_all/pred/pred_' + the_id + '_0.bigwig')
+                    bw_unet = pyBigWig.open(pathu + 'unet_' + feature_assay + '_' + target_assay + '_all/epoch03/pred_' + the_id + '_seed0.bigwig')
                     for the_chr in chr_all:
                         print(the_id, the_chr)
                         pred = np.zeros(chr_len_bin[the_chr])
-                        pred += bw_avg.values(the_chr, 0, chr_len_bin[the_chr])
-                        pred += np.array(bw_lgbm.values(the_chr, 0, chr_len_bin[the_chr])) * 2.0
+                        pred += dict_avg[the_chr]
+                        pred += np.array(bw_lgbm.values(the_chr, 0, chr_len_bin[the_chr])) * 4.0
                         pred += bw_unet.values(the_chr, 0, chr_len_bin[the_chr])
-                        pred = pred / 4.0
+                        pred = pred / 6.0
+                        pred[pred<0] = 0
                         # convert into bigwig format
+                        ## 0. short bigwig
                         x = pred
                         # pad two zeroes
                         z=np.concatenate(([0],x,[0]))
@@ -88,9 +101,15 @@ for target_assay in tier0+tier1+tier2+tier3:
                             vals=np.concatenate((vals,[0]))
                         # write 
                         chroms = np.array([the_chr] * len(vals))
-                        bw_output.addEntries(chroms, starts, ends=ends, values=vals)
-                    bw_output.close()
-                    bw_avg.close()
+                        bw_output0.addEntries(chroms, starts, ends=ends, values=vals)
+                        ## 1. full length bigwig
+                        starts = np.arange(0,chr_len[the_chr],25)
+                        ends = np.concatenate((starts[1:],[chr_len[the_chr]]))
+                        vals = pred
+                        chroms = np.array([the_chr] * len(vals))
+                        bw_output1.addEntries(chroms, starts, ends=ends, values=vals)
+                    bw_output0.close()
+                    bw_output1.close()
                     bw_lgbm.close()
                     bw_unet.close()
                     break

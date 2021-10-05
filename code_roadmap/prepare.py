@@ -4,7 +4,8 @@ import numpy as np
 import time
 
 tier0=['H3K4me1','H3K4me3','H3K36me3','H3K27me3','H3K9me3']
-tier1=['H3K27ac','H3K9ac','DNase']
+tier1=['H3K27ac','H3K9ac']
+#,'DNase']
 tier2=['H3K4me2','H2A.Z','H3K79me2','H4K20me1']
 tier3=['H2AK5ac','H2BK120ac','H2BK5ac','H3K18ac','H3K23ac',\
     'H3K4ac','H3K79me1','H4K8ac','H2BK12ac','H3K14ac',\

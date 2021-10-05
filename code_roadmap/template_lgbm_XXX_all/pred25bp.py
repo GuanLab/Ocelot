@@ -22,6 +22,7 @@ def convert_feature_tensor(input2d, reso=25): # e.g. input2d d0 * (25*n) -> outp
     output2d=output2d.reshape((d0 * reso,-1))
     return output2d
 
+reso=25
 num_epoch=1
 size_batch=100000 # 0.1m; must be 25*n
 flank=5
@@ -29,23 +30,17 @@ neighbor=2*flank+1
 flank_dna=1
 neighbor_dna=2*flank_dna+1
 
-chr_all=['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chrX']
+chr_all=['chr' + str(i) for i in range(1,23)] + ['chrX']
 #num_bp=[248956422,242193529,198295559,190214555,181538259,170805979,159345973,145138636,138394717,133797422,135086622,133275309,114364328,107043718,101991189,90338345,83257441,80373285,58617616,64444167,46709983,50818468,156040895]
-num_bp=[249250621,243199373,198022430,191154276,180915260,171115067,159138663,146364022,141213431,135534747,135006516,133851895,115169878,107349540,102531392,90354753,81195210,78077248,59128983,63025520,48129895,51304566,155270560]
+num_bp=np.array([249250621,243199373,198022430,191154276,180915260,171115067,159138663,146364022,141213431,135534747,135006516,133851895,115169878,107349540,102531392,90354753,81195210,78077248,59128983,63025520,48129895,51304566,155270560])
+num_bp_bin=np.ceil(num_bp/reso).astype('int')
+num_bp_cut=(np.floor(num_bp/reso)*reso).astype('int')
 
-chr_len_cut={}
-for i in np.arange(len(chr_all)):
-    chr_len_cut[chr_all[i]]=int(np.floor(num_bp[i]/25.0)*25) # HERE I cut tails
+chr_len=dict(zip(chr_all,num_bp.tolist()))
+chr_len_bin=dict(zip(chr_all,num_bp_bin.tolist()))
+chr_len_cut=dict(zip(chr_all,num_bp_cut.tolist()))
 
-chr_len={}
-for i in np.arange(len(chr_all)):
-    chr_len[chr_all[i]]=num_bp[i]
-
-chr_len_bin={}
-for i in np.arange(len(chr_all)):
-    chr_len_bin[chr_all[i]]=int(np.ceil(num_bp[i]/25.0))
-
-path0='../../data/bigwig_all/'
+path0='../../data_roadmap/bigwig_all/'
 
 ## test cell
 exclude_all=[]
@@ -141,9 +136,10 @@ list_chr=chr_all
 path_pred='./pred/'
 os.system('mkdir -p ' + path_pred)
 bw_output = pyBigWig.open(path_pred + 'pred_' + list_label_test[0] + '_' + str(seed_partition) + '.bigwig','w')
-bw_output.addHeader(list(zip(chr_all , np.ceil(np.array(num_bp)/25).astype('int').tolist())), maxZooms=0)
+bw_output.addHeader(list(zip(chr_all , num_bp_bin.tolist())), maxZooms=0)
 
-num_dna=4
+#num_dna=4
+num_dna=0
 num_feature=len(cell_common)*2 + len(assay_feature)*2
 num_n5cut=len(cell_common)*2 + len(assay_feature)*2
 
@@ -157,10 +153,10 @@ for the_chr in list_chr:
         image=np.zeros((num_dna + num_feature, end-start), dtype='float32')
         # 2.1 dna
         num=0
-        for j in np.arange(len(list_dna)):
-            the_id=list_dna[j]
-            image[num,:] = dict_dna[the_id].values(the_chr,start,end)
-            num+=1
+#        for j in np.arange(len(list_dna)):
+#            the_id=list_dna[j]
+#            image[num,:] = dict_dna[the_id].values(the_chr,start,end)
+#            num+=1
         # 2.2 feature & diff
         the_avg=dict_avg[assay_target].values(the_chr,start,end)
         for the_cell in cell_common:
@@ -201,9 +197,10 @@ for the_chr in list_chr:
 
         # convert to 25bp features
         # dna - 25bp one hot
-        image1=convert_feature_tensor(image[:num_dna,:], reso=25) # this reso is different from train.py
+#        image1=convert_feature_tensor(image[:num_dna,:], reso=25) # this reso is different from train.py
         # assay - mmm features
-        image2=image[4:,:].reshape((num_feature, -1, 25)) # 3d - d0 * n * 25
+#        image2=image[4:,:].reshape((num_feature, -1, 25)) # 3d - d0 * n * 25
+        image2=image.reshape((num_feature, -1, 25)) # 3d - d0 * n * 25
         image2=calculate_mmm(image2) # 3d - d0 * n * 3
         image2=image2.reshape((num_feature, -1)) # 2d - d0 * (n*3)
         image2=convert_feature_tensor(image2, reso=3) # 2d - (d0*3) * n
@@ -212,13 +209,13 @@ for the_chr in list_chr:
         largespace=np.zeros((num_dna*25*neighbor_dna+num_feature*3*neighbor+num_n5cut*neighbor, \
             int((end-start)/25)-2*flank))
         # dna - 25bp one hot
-        for n1 in np.arange(num_dna):
-            for n2 in np.arange(neighbor_dna):
-                tmp1 = n1*25*neighbor_dna + n2*25
-                tmp2 = tmp1 + 25
-                tmp = flank-flank_dna # neighbor_dna short so we need to shift it
-                largespace[tmp1:tmp2,:]=image1[n1*25:(n1+1)*25, \
-                    (n2+tmp):(int((end-start)/25)-2*flank+n2+tmp)]
+#        for n1 in np.arange(num_dna):
+#            for n2 in np.arange(neighbor_dna):
+#                tmp1 = n1*25*neighbor_dna + n2*25
+#                tmp2 = tmp1 + 25
+#                tmp = flank-flank_dna # neighbor_dna short so we need to shift it
+#                largespace[tmp1:tmp2,:]=image1[n1*25:(n1+1)*25, \
+#                    (n2+tmp):(int((end-start)/25)-2*flank+n2+tmp)]
         # assay - mmm features
         for n1 in np.arange(num_feature):
             for n2 in np.arange(neighbor):
@@ -237,7 +234,7 @@ for the_chr in list_chr:
         pred[start_pred:end_pred]=gbm.predict(largespace.T)
         del image
         del n5cut
-        del image1
+#        del image1
         del image2
         del largespace
 
@@ -263,6 +260,9 @@ for the_chr in list_chr:
     # write 
     chroms = np.array([the_chr] * len(vals))
     bw_output.addEntries(chroms, starts, ends=ends, values=vals)
+    del pred
+    del x
+    del z
 
 bw_output.close()
 

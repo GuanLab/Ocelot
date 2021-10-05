@@ -40,8 +40,9 @@ conda install keras
 * [Ocelot imputation for the ENCODE3 histone mark dataset](https://guanfiles.dcmb.med.umich.edu/Ocelot/imputation_encode3/)
 * [Ocelot imputation for the Roadmap histone mark dataset](https://guanfiles.dcmb.med.umich.edu/Ocelot/imputation_roadmap/)
 
-## Code for ENCODE Imputation Challenge with examples
-* [challenge solution](https://github.com/GuanLab/ENCODE_imputation)
+## Code for Ocelot without DNA and evaluation on the challenge data
+* data_challenge
+* code_challenge
 
 ## Data processing and model building scripts for ENCODE3 imputation
 * data_encode3
@@ -53,6 +54,9 @@ conda install keras
 
 ## Code for SHAP analysis
 * code_shap
+
+## Code for ENCODE Imputation Challenge with examples
+* [challenge solution](https://github.com/GuanLab/ENCODE_imputation)
 
 
 

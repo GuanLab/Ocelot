@@ -12,7 +12,7 @@ tier3=['H2AK5ac','H2BK120ac','H2BK5ac','H3K18ac','H3K23ac',\
     'H4K5ac','H3K23me2','H2AK9ac','H3T11ph','H4K12ac']
 tier4=['methyl','RNA-seq']
 
-id_all=np.loadtxt('../../data/id_all.txt','str')
+id_all=np.loadtxt('../../data_roadmap/id_all.txt','str')
 
 target_assay='XXX'
 feature_assay=[]

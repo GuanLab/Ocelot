@@ -1,0 +1,5 @@
+1i
+track type=wiggle_0 name=XXX
+fixedStep  chrom=YYY start=1 step=25 span=25
+.
+x

@@ -45,23 +45,15 @@ params = {
 }
 #########################
 
-chr_all=['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chrX']
+chr_all=['chr' + str(i) for i in range(1,23)] + ['chrX']
 # grch38
-num_bp=[248956422,242193529,198295559,190214555,181538259,170805979,159345973,145138636,138394717,133797422,135086622,133275309,114364328,107043718,101991189,90338345,83257441,80373285,58617616,64444167,46709983,50818468,156040895]
-#num_bp=[249250621,243199373,198022430,191154276,180915260,171115067,159138663,146364022,141213431,135534747,135006516,133851895,115169878,107349540,102531392,90354753,81195210,78077248,59128983,63025520,48129895,51304566,155270560]
+num_bp=np.array([248956422,242193529,198295559,190214555,181538259,170805979,159345973,145138636,138394717,133797422,135086622,133275309,114364328,107043718,101991189,90338345,83257441,80373285,58617616,64444167,46709983,50818468,156040895])
+#num_bp=np.array([249250621,243199373,198022430,191154276,180915260,171115067,159138663,146364022,141213431,135534747,135006516,133851895,115169878,107349540,102531392,90354753,81195210,78077248,59128983,63025520,48129895,51304566,155270560])
+num_bp_bin=np.ceil(num_bp/reso).astype('int')
 
-chr_len={}
-for i in np.arange(len(chr_all)):
-    chr_len[chr_all[i]]=num_bp[i]
+chr_len=dict(zip(chr_all,num_bp.tolist()))
+chr_len_bin=dict(zip(chr_all,num_bp_bin.tolist()))
 
-chr_len_bin={}
-for i in np.arange(len(chr_all)):
-    chr_len_bin[chr_all[i]]=int(np.ceil(num_bp[i]/25.0))
-
-path1='../../data_encode3/sample_all_lgbm_seed0/'
-path2='../../data_encode3/sample_all_lgbm_seed1/' 
-
-## test cell
 list_dna=['A','C','G','T']
 
 # argv
@@ -84,6 +76,11 @@ assay_target = args.target
 assay_feature = args.feature
 cell_all = args.cell
 seed_partition = args.seed
+
+i = seed_partition % 5
+j = (seed_partition + 1) % 5
+path1='../../data_encode3/sample_all_lgbm_seed%d/' % i
+path2='../../data_encode3/sample_all_lgbm_seed%d/' % j
 
 ## parition common & specific cell types
 np.random.seed(seed_partition)
@@ -118,11 +115,12 @@ print('cell_vali', len(cell_vali), cell_vali)
 
 ## load pre-sampled data ######################################
 # sample freq for each chr
-freq=np.rint(np.array(num_bp)/sum(num_bp)*tmp_num_sample).astype('int')
+freq=np.rint(num_bp/sum(num_bp)*tmp_num_sample).astype('int')
 num_sample = np.sum(freq) # num_sample may shift e.g. 50,000 -> 50,001
 
 # number of features for each type
-num_dna=4
+#num_dna=4
+num_dna=0
 num_feature=len(cell_common)*2 + len(assay_feature)*2
 num_n5cut=len(cell_common)*2 + len(assay_feature)*2
 
@@ -146,11 +144,11 @@ for k in np.arange(len(cell_train)):
         num_sample), dtype='float32')
     num=0
     ## dna
-    for j in np.arange(len(list_dna)):
-        the_id=list_dna[j]
-        print(the_id)
-        image_train[num:(num+25*neighbor_dna), :] = np.load(path1 + 'image_' + the_id  + '.npy')
-        num += 25*neighbor_dna
+#    for j in np.arange(len(list_dna)):
+#        the_id=list_dna[j]
+#        print(the_id)
+#        image_train[num:(num+25*neighbor_dna), :] = np.load(path1 + 'image_' + the_id  + '.npy')
+#        num += 25*neighbor_dna
     ## mmm & diff
     for the_cell in cell_common:
         the_id = the_cell + '_' + assay_target
@@ -181,11 +179,11 @@ for k in np.arange(len(cell_vali)):
         num_sample), dtype='float32')
     num=0
     ## dna
-    for j in np.arange(len(list_dna)):
-        the_id=list_dna[j]
-        print(the_id)
-        image_vali[num:(num+25*neighbor_dna), :] = np.load(path2 + 'image_' + the_id  + '.npy')
-        num += 25*neighbor_dna
+#    for j in np.arange(len(list_dna)):
+#        the_id=list_dna[j]
+#        print(the_id)
+#        image_vali[num:(num+25*neighbor_dna), :] = np.load(path2 + 'image_' + the_id  + '.npy')
+#        num += 25*neighbor_dna
     ## mmm & diff
     for the_cell in cell_common:
         the_id = the_cell + '_' + assay_target

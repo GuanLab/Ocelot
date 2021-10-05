@@ -12,6 +12,7 @@ id_all=np.loadtxt('../../data_encode3/id_all.txt','str')
 
 target_assay='XXX'
 feature_assay=['YYY']
+feature_done='ZZZ'.split('_')
 
 cell_train_vali=[]
 for i in np.arange(1,80):
@@ -30,15 +31,37 @@ for i in np.arange(1,80):
 
 print(cell_train_vali)
 
+cell_done=[]
+for the_feature in feature_done:
+    feature_subset = [the_feature]
+    for i in np.arange(1,80):
+        the_cell='C%03d' % i
+        the_id = the_cell + '_' + target_assay
+        if the_id in id_all:
+            continue;
+        count=0
+        for the_assay in feature_subset:
+            the_id = the_cell + '_' + the_assay
+            if the_id in id_all:
+                count += 1
+        if count != len(feature_subset):
+            continue;
+        cell_done.append(the_cell)
+
+cell_done.sort()
+print(cell_done)
+
 cell_test_all=[]
 for i in np.arange(1,80):
     the_cell='C%03d' % i
     the_id = the_cell + '_' + target_assay
     if the_id in id_all:
         continue;
+    if the_cell in cell_done:
+        continue;
     count=0
     for the_assay in feature_assay:
-        the_id = the_cell + '_' + the_assay 
+        the_id = the_cell + '_' + the_assay
         if the_id in id_all:
             count += 1
     if count != len(feature_assay):

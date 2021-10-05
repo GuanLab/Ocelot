@@ -75,7 +75,7 @@ image_n5cut=np.zeros((2, num_sample*neighbor), dtype='float32')
 bw_label=pyBigWig.open(path0 + 'gt_' + the_id + '.bigwig')
 bw_image=pyBigWig.open(path0 + the_id + '.bigwig')
 bw_avg=pyBigWig.open(path0 + 'avg_' + the_assay + '.bigwig')
-bw_image_n5cut=pyBigWig.open(path0 + the_id + '.bigwig')
+bw_image_n5cut=pyBigWig.open(path0 + 'n5cut_' + the_id + '.bigwig')
 bw_avg_n5cut=pyBigWig.open(path0 + 'avg_n5cut_' + the_assay + '.bigwig')
 
 index_sample=0
