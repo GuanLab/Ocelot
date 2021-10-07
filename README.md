@@ -46,12 +46,12 @@ conda install keras
 Reproducing all these imputations and evaluations requires considerable time even with super computing resources, we therefore also provide the processed data, trained models and predictions together with the reproducible scripts.
 * 0a. [Ocelot - the challenge final submission](http://mitra.stanford.edu/kundaje/ic/round2/3393417/) or [npy format](https://guanfiles.dcmb.med.umich.edu/Ocelot/challenge_submission/)
 * 0b. [Ensemble predictions without DNA](https://guanfiles.dcmb.med.umich.edu/Ocelot/ensemble_predictions_without_dna/)
-* 1.  [Processed data](https://guanfiles.dcmb.med.umich.edu/Ocelot/processed_data/)
+*  1. [Processed data](https://guanfiles.dcmb.med.umich.edu/Ocelot/processed_data/)
 * 2a. [Trained lightGBM and neural network models and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/models/)
 * 2b. [Trained lightGBM and neural network models without DNA and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/models_without_dna/)<br />
 For benchmarking, predictions from Avocado and ChromImpute are also provided:
-* 3.  [Avocado predictions](http://mitra.stanford.edu/kundaje/ic/avocado/)
-* 4.  [ChromImpute models and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/chromimpute/)
+*  3. [Avocado predictions](http://mitra.stanford.edu/kundaje/ic/avocado/)
+*  4. [ChromImpute models and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/chromimpute/)
 
 ## Data processing and model building scripts for ENCODE3 imputation
 * data_encode3
