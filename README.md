@@ -40,7 +40,7 @@ conda install keras
 * [Ocelot imputation for the ENCODE3 histone mark dataset](https://guanfiles.dcmb.med.umich.edu/Ocelot/imputation_encode3/)
 * [Ocelot imputation for the Roadmap histone mark dataset](https://guanfiles.dcmb.med.umich.edu/Ocelot/imputation_roadmap/)
 
-## Code of Ocelot without DNA and evaluation on the challenge data
+## Code of Ocelot and evaluation on the challenge data
 * data_challenge
 * code_challenge <br />
 Reproducing all these imputations and evaluations requires considerable time even with super computing resources, we therefore also provide the processed data, trained models and predictions together with the reproducible scripts.
