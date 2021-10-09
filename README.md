@@ -43,15 +43,34 @@ conda install keras
 ## Code of Ocelot and evaluation on the challenge data
 * data_challenge
 * code_challenge <br />
+
+
 Reproducing all these imputations and evaluations requires considerable time even with super computing resources, we therefore also provide the processed data, trained models and predictions together with the reproducible scripts.
 * 0a. [Ocelot - the challenge final submission](http://mitra.stanford.edu/kundaje/ic/round2/3393417/) or [npy format](https://guanfiles.dcmb.med.umich.edu/Ocelot/challenge_submission/)
 * 0b. [Ensemble predictions without DNA](https://guanfiles.dcmb.med.umich.edu/Ocelot/ensemble_predictions_without_dna/)
 * 1a. [Processed data](https://guanfiles.dcmb.med.umich.edu/Ocelot/processed_data/)
 * 2a. [Trained lightGBM and neural network models and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/models/)
 * 2b. [Trained lightGBM and neural network models without DNA and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/models_without_dna/)<br />
+
+
 For benchmarking, predictions from Avocado and ChromImpute are also provided:
 * 3a. [Avocado predictions](http://mitra.stanford.edu/kundaje/ic/avocado/)
 * 4a. [ChromImpute models and predictions](https://guanfiles.dcmb.med.umich.edu/Ocelot/chromimpute/)
+
+
+### Mapping between letter, id and histone mark in challenge
+For simplicity, we map the epigeneic marks to captital letters as follows:
+| letter |  id |      mark |
+| ------ | --- | --------- |
+| C      | M02 | DNase-seq |
+| D      | M18 | H3K36me3  |
+| E      | M17 | H3K27me3  |
+| F      | M16 | H3K27ac   |
+| G      | M20 | H3K4me1   |
+| H      | M22 | H3K4me3   |
+| I      | M29 | H3K9me3   |
+| J      | M01 | ATAC-seq  |
+For example, in the "CDEH_I" design, we used four marks (C, D, E, H) as cell type-specific features to predict mark I.
 
 ## Data processing and model building scripts for ENCODE3 imputation
 * data_encode3
