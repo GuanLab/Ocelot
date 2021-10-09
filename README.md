@@ -70,6 +70,7 @@ For simplicity, we map the epigeneic marks to captital letters as follows:
 | H      | M22 | H3K4me3   |
 | I      | M29 | H3K9me3   |
 | J      | M01 | ATAC-seq  |
+
 For example, in the "CDEH_I" design, we used four marks (C, D, E, H) as cell type-specific features to predict mark I.
 
 ## Data processing and model building scripts for ENCODE3 imputation
