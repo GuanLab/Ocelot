@@ -34,6 +34,8 @@ os.system('mkdir -p ' + path0)
 path1='./pred_ensemble/'
 os.system('mkdir -p ' + path1)
 
+reso = 25
+
 for the_assay in tier0+tier1+tier2+tier3:
     bw_avg = pyBigWig.open('../data_roadmap/bigwig_all/avg_' + the_assay + '.bigwig')
     dict_avg = {}
