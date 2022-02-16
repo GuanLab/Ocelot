@@ -35,6 +35,17 @@ path1='./pred_ensemble/'
 os.system('mkdir -p ' + path1)
 
 for the_assay in tier0+tier1+tier2+tier3:
+    bw_avg = pyBigWig.open('../data_roadmap/bigwig_all/avg_' + the_assay + '.bigwig')
+    dict_avg = {}
+    for the_chr in chr_all:
+        x = np.array(bw_avg.values(the_chr, 0, chr_len[the_chr]))
+        x[np.isnan(x)]=0
+        # convert into low resolution
+        tmp=np.zeros(int(chr_len_bin[the_chr]*reso - len(x)))
+        x=np.concatenate((x,tmp))
+        x=np.mean(x.reshape((-1,reso)),axis=1)
+        dict_avg[the_chr] = x
+    bw_avg.close()
     for i in np.concatenate((np.arange(1,60), np.arange(61,64), np.arange(65,130))):
         the_cell='E%03d' % i
         the_id = the_cell + '_' + the_assay
@@ -43,13 +54,12 @@ for the_assay in tier0+tier1+tier2+tier3:
             bw_output0.addHeader(list(zip(chr_all , np.ceil(np.array(num_bp)/25).astype('int').tolist())), maxZooms=0)
             bw_output1 = pyBigWig.open(path1 + the_id + '.bigwig','w')
             bw_output1.addHeader(list(zip(chr_all , num_bp)), maxZooms=0)
-            bw_avg = pyBigWig.open('../data_roadmap/bigwig_all/avg_' + the_assay + '.bigwig')
             bw_lgbm = pyBigWig.open('./lgbm_' + the_assay + '_all/pred/pred_' + the_id + '_0.bigwig')
             bw_unet = pyBigWig.open('./unet_' + the_assay + '_all/epoch03/pred_' + the_id + '_seed0.bigwig')
             for the_chr in chr_all:
                 print(the_id, the_chr)
                 pred = np.zeros(chr_len_bin[the_chr])
-                pred += bw_avg.values(the_chr, 0, chr_len_bin[the_chr])
+                pred += dict_avg[the_chr]
                 pred += np.array(bw_lgbm.values(the_chr, 0, chr_len_bin[the_chr])) * 4.0
                 pred += bw_unet.values(the_chr, 0, chr_len_bin[the_chr])
                 pred = pred / 6.0
@@ -83,7 +93,6 @@ for the_assay in tier0+tier1+tier2+tier3:
                 bw_output1.addEntries(chroms, starts, ends=ends, values=vals)
             bw_output0.close()
             bw_output1.close()
-            bw_avg.close()
             bw_lgbm.close()
             bw_unet.close()
 

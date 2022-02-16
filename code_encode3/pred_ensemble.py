@@ -52,11 +52,19 @@ dict_map['H3K9me2']=['H3K4me3','H3K36me3','H3K27me3','H3K27ac']
 
 the_template='template_unet_YYY_XXX_all'
 
+reso = 25
+
 for target_assay in tier0+tier1+tier2+tier3:
     bw_avg = pyBigWig.open('../data_encode3/bigwig_all/avg_' + target_assay + '.bigwig')
     dict_avg = {}
     for the_chr in chr_all:
-        dict_avg[the_chr] = np.array(bw_avg.values(the_chr, 0, chr_len_bin[the_chr]))
+        x = np.array(bw_avg.values(the_chr, 0, chr_len[the_chr]))
+        x[np.isnan(x)]=0
+        # convert into low resolution
+        tmp=np.zeros(int(chr_len_bin[the_chr]*reso - len(x)))
+        x=np.concatenate((x,tmp))
+        x=np.mean(x.reshape((-1,reso)),axis=1)
+        dict_avg[the_chr] = x
     bw_avg.close()
     for i in np.arange(1,80):
         the_cell='C%03d' % i
